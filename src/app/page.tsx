@@ -48,11 +48,16 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {/* Feature 1: Recipes */}
               <div className="text-center">
-                <div className="h-40 bg-muted rounded-lg mb-6">
-                  {/* Illustration: Cooking book or recipe cards */}
+                <div className="h-40 relative rounded-lg mb-6">
+                  <Image
+                    src="/undraw_recipes.png"
+                    alt="Illustration de recettes de cuisine"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">
-                  Gérez vos recettes
+                  Gestion de vos recettes
                 </h3>
                 <p className="text-muted-foreground">
                   Créez, organisez et retrouvez facilement toutes vos recettes préférées. 
@@ -62,8 +67,13 @@ export default function HomePage() {
 
               {/* Feature 2: Planning */}
               <div className="text-center">
-                <div className="h-40 bg-muted rounded-lg mb-6">
-                  {/* Illustration: Calendar with meals */}
+                <div className="h-40 relative rounded-lg mb-6">
+                  <Image
+                    src="/undraw_planning.png"
+                    alt="Illustration de planning de repas"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">
                   Planning intelligent
@@ -76,8 +86,13 @@ export default function HomePage() {
 
               {/* Feature 3: Shopping */}
               <div className="text-center">
-                <div className="h-40 bg-muted rounded-lg mb-6">
-                  {/* Illustration: Shopping cart or grocery list */}
+                <div className="h-40 relative rounded-lg mb-6">
+                  <Image
+                    src="/undraw_shopping.png"
+                    alt="Illustration de liste de courses"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">
                   Liste de courses optimisée

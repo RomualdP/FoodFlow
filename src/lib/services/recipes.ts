@@ -7,31 +7,67 @@ export interface Recipe {
   title: string;
   servings: number;
   instructions: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
   user_id: string;
+  preparation_time?: string;
+  difficulty?: string;
+  recipe_tags?: Array<{
+    category: string;
+    value: string;
+    label: string;
+  }>;
+  tags?: Array<{
+    id: string;
+    name: string;
+    category: string;
+  }>;
+}
+
+export interface RecipeTag {
+  category: string;
+  value: string;
+  label: string;
 }
 
 export interface CreateRecipeData {
   title: string;
   servings: number;
   instructions: string;
+  image_url?: string | null;
   ingredients: {
     ingredient_id: number;
     quantity: number;
     unit: string;
   }[];
-  tags: string[];
+  tags: RecipeTag[];
 }
 
 export async function createRecipe(data: CreateRecipeData) {
-  const { title, servings, instructions, ingredients, tags } = data;
+  const { title, servings, instructions, ingredients, tags, image_url } = data;
+
+  // Extraire les tags spéciaux qui vont dans la table recipes
+  const preparationTime = tags.find(tag => tag.category === 'preparation_time')?.value;
+  const difficulty = tags.find(tag => tag.category === 'difficulty')?.value;
+
+  // Récupérer l'utilisateur courant
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Utilisateur non authentifié");
 
   // Commencer une transaction
   const { data: recipe, error: recipeError } = await supabase
     .from('recipes')
     .insert([
-      { title, servings, instructions }
+      { 
+        title, 
+        servings, 
+        instructions,
+        image_url,
+        preparation_time: preparationTime,
+        difficulty,
+        user_id: user.id
+      }
     ])
     .select()
     .single();
@@ -61,7 +97,9 @@ export async function createRecipe(data: CreateRecipeData) {
       .insert(
         tags.map(tag => ({
           recipe_id: recipe.id,
-          tag
+          category: tag.category,
+          value: tag.value,
+          label: tag.label
         }))
       );
 
@@ -69,6 +107,14 @@ export async function createRecipe(data: CreateRecipeData) {
   }
 
   return recipe;
+}
+
+export async function deleteRecipeImage(imagePath: string) {
+  const { error } = await supabase.storage
+    .from('recipes')
+    .remove([imagePath]);
+
+  if (error) throw error;
 }
 
 export async function getRecipes() {
@@ -85,7 +131,9 @@ export async function getRecipes() {
         )
       ),
       recipe_tags (
-        tag
+        category,
+        value,
+        label
       )
     `)
     .order('created_at', { ascending: false });
@@ -108,7 +156,9 @@ export async function getRecipe(id: number) {
         )
       ),
       recipe_tags (
-        tag
+        category,
+        value,
+        label
       )
     `)
     .eq('id', id)
@@ -116,4 +166,5 @@ export async function getRecipe(id: number) {
 
   if (error) throw error;
   return data;
-} 
+}
+  
