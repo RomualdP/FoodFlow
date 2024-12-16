@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Navbar } from '@/components/navbar'
 
 export const metadata: Metadata = {
   title: 'FoodFlow - Gestion de recettes',
@@ -13,8 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        {children}
+      <body suppressHydrationWarning className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto py-6">
+          {children}
+        </main>
       </body>
     </html>
   )

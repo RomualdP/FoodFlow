@@ -1,0 +1,73 @@
+# Bonnes Pratiques Next.js et React
+
+## Architecture et Structure
+- Utiliser le dossier `src/` pour tout le code source
+- Organiser les composants par fonctionnalité dans `src/components/`
+- Placer les composants réutilisables UI dans `src/components/ui/`
+- Garder les services et utilitaires dans `src/lib/`
+- Utiliser le dossier `app/` pour le routage et les pages
+- Séparer les types dans des fichiers `.d.ts` ou avec le suffixe `.types.ts`
+
+## Composants
+- Utiliser 'use client' uniquement quand nécessaire (composants interactifs)
+- Préférer les composants fonctionnels avec des hooks
+- Éviter les props drilling, utiliser le Context si nécessaire
+- Extraire la logique complexe dans des hooks personnalisés
+- Nommer les composants en PascalCase
+- Un composant par fichier
+
+## Performance
+- Utiliser Image de Next.js pour les images
+- Implémenter le chargement lazy pour les composants lourds
+- Optimiser les re-rendus avec useMemo et useCallback quand pertinent
+- Utiliser les métadonnées Next.js pour le SEO
+- Préférer les Server Components quand possible
+
+## État et Données
+- Utiliser les Server Components pour les données statiques
+- Implémenter le pattern SWR pour la récupération de données
+- Gérer les états globaux avec des contexts ou des gestionnaires d'état
+- Valider les données avec Zod ou TypeScript
+- Utiliser les actions serveur pour les mutations
+
+## TypeScript
+- Toujours définir les types des props
+- Éviter any et unknown sauf si absolument nécessaire et auquel cas, expliquer en commentaire pourquoi
+- Utiliser des interfaces pour les objets réutilisables
+- Préférer type pour les unions et les types simples
+- Utiliser des enums pour les valeurs constantes
+
+## Styles
+- Utiliser Tailwind CSS de manière cohérente
+- Grouper les classes avec des composants shadcn/ui
+- Maintenir une palette de couleurs cohérente
+- Utiliser les variables CSS pour les thèmes
+- Respecter le système de design établi
+
+## Sécurité
+- Valider toutes les entrées utilisateur
+- Utiliser les helpers de Supabase pour l'authentification
+- Implémenter CSRF protection
+- Sanitizer le contenu HTML dynamique
+- Utiliser les variables d'environnement pour les secrets
+
+## Tests
+- Écrire des tests unitaires pour les composants critiques
+- Tester les hooks personnalisés
+- Implémenter des tests e2e pour les flux critiques
+- Utiliser les outils de test recommandés par Next.js
+- Maintenir une bonne couverture de tests
+
+## Git
+- Commits atomiques et descriptifs
+- Branches par fonctionnalité
+- Pull requests avec description détaillée
+- Revue de code obligatoire
+- Pas de secrets dans le code
+
+## Accessibilité
+- Utiliser des balises sémantiques
+- Implémenter ARIA labels quand nécessaire
+- Assurer la navigation au clavier
+- Maintenir un bon contraste des couleurs
+- Tester avec des lecteurs d'écran 

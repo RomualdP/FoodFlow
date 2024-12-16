@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signUp } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
   const [mounted, setMounted] = useState(false);
@@ -16,7 +16,6 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     setMounted(true);
@@ -54,23 +53,15 @@ export default function RegisterPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
-      
+    const { error } = await signUp(email, password);
+    
+    if (error) {
+      setError(error);
+    } else {
       router.push("/login?message=verification-email-sent");
-    } catch (err: any) {
-      setError("Erreur lors de l'inscription. Veuillez réessayer.");
-    } finally {
-      setLoading(false);
     }
+    
+    setLoading(false);
   };
 
   return (

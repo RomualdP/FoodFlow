@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
+import { signInWithEmail, signInWithGoogle } from "@/lib/actions/auth";
 
 export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
@@ -14,14 +14,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return null; // ou un loader
+    return null;
   }
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -29,33 +28,22 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+    const { error } = await signInWithEmail(email, password);
+    
+    if (error) {
+      setError(error);
+    } else {
       router.refresh();
       router.push("/");
-    } catch (err: any) {
-      setError("Erreur de connexion. Vérifiez vos identifiants.");
-    } finally {
-      setLoading(false);
     }
+    
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      setError("Erreur lors de la connexion avec Google");
+    const { error } = await signInWithGoogle();
+    if (error) {
+      setError(error);
     }
   };
 
