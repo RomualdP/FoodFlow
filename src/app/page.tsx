@@ -8,9 +8,10 @@ import { getRandomRecipes } from "@/lib/services/recipes"
 import { supabase } from "@/lib/services/recipes"
 import { RecipeCard } from "@/components/recipe-card"
 import type { Recipe } from "@/lib/services/recipes"
+import type { User } from '@supabase/supabase-js'
 
 export default function HomePage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [suggestedRecipes, setSuggestedRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
 
