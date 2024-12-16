@@ -21,6 +21,15 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
+  const getTimeLabel = (time: number): string => {
+    if (time < 20) return "Moins de 20 min";
+    if (time <= 30) return "20-30 min";
+    if (time <= 45) return "30-45 min";
+    if (time <= 60) return "45-60 min";
+    if (time <= 90) return "1h-1h30";
+    return "Plus de 1h30";
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "easy":
@@ -65,33 +74,45 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           )}
         </div>
         <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-1">
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2 min-h-[3.5rem]">
             {recipe.title}
           </h3>
-          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{recipe.preparationTime > 0 ? `${recipe.preparationTime} min` : 'Non défini'}</span>
+          <div className="grid grid-cols-3 gap-2 text-sm text-muted-foreground mb-4">
+            <div className="flex flex-col items-center text-center">
+              <Clock className="w-4 h-4 mb-1" />
+              <span className="text-xs">{recipe.preparationTime > 0 ? getTimeLabel(recipe.preparationTime) : 'Non défini'}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <ChefHat className="w-4 h-4" />
-              <span className={`px-2 py-0.5 rounded-full ${getDifficultyColor(recipe.difficulty)}`}>
+            <div className="flex flex-col items-center text-center">
+              <ChefHat className="w-4 h-4 mb-1" />
+              <span className={`text-xs px-2 py-0.5 rounded-full ${getDifficultyColor(recipe.difficulty)}`}>
                 {getDifficultyLabel(recipe.difficulty)}
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>{recipe.servings} pers.</span>
+            <div className="flex flex-col items-center text-center">
+              <Users className="w-4 h-4 mb-1" />
+              <span className="text-xs">{recipe.servings} pers.</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {recipe.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag.id} variant="secondary">
-                {tag.name}
+            {recipe.tags
+              .filter(tag => !['preparation_time', 'difficulty', 'servings'].includes(tag.category))
+              .slice(0, 3)
+              .map((tag) => (
+                <Badge 
+                  key={tag.id} 
+                  variant="secondary"
+                  className="text-xs bg-gray-100 px-2 py-1"
+                >
+                  {tag.name}
+                </Badge>
+              ))}
+            {recipe.tags.filter(tag => !['preparation_time', 'difficulty', 'servings'].includes(tag.category)).length > 3 && (
+              <Badge 
+                variant="secondary"
+                className="text-xs bg-gray-100 px-2 py-1"
+              >
+                +{recipe.tags.filter(tag => !['preparation_time', 'difficulty', 'servings'].includes(tag.category)).length - 3}
               </Badge>
-            ))}
-            {recipe.tags.length > 3 && (
-              <Badge variant="secondary">+{recipe.tags.length - 3}</Badge>
             )}
           </div>
         </CardContent>

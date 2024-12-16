@@ -11,8 +11,17 @@ export interface Recipe {
   created_at: string;
   updated_at: string;
   user_id: string;
+  is_public: boolean;
   preparation_time?: string;
   difficulty?: string;
+  recipe_ingredients?: Array<{
+    ingredient_id: number;
+    quantity: number;
+    unit: string;
+    ingredients: {
+      name: string;
+    };
+  }>;
   recipe_tags?: Array<{
     category: string;
     value: string;
@@ -66,7 +75,8 @@ export async function createRecipe(data: CreateRecipeData) {
         image_url,
         preparation_time: preparationTime,
         difficulty,
-        user_id: user.id
+        user_id: user.id,
+        is_public: true
       }
     ])
     .select()
@@ -118,7 +128,10 @@ export async function deleteRecipeImage(imagePath: string) {
 }
 
 export async function getRecipes() {
-  const { data, error } = await supabase
+  const { data: { user } } = await supabase.auth.getUser();
+  console.log('Current user:', user?.id);
+  
+  let query = supabase
     .from('recipes')
     .select(`
       *,
@@ -138,11 +151,23 @@ export async function getRecipes() {
     `)
     .order('created_at', { ascending: false });
 
+  if (user) {
+    // Si l'utilisateur est connecté, montrer les recettes publiques ET ses recettes privées
+    query = query.or(`is_public.eq.true,user_id.eq.${user.id}`);
+  } else {
+    // Si pas d'utilisateur, montrer uniquement les recettes publiques
+    query = query.eq('is_public', true);
+  }
+
+  const { data, error } = await query;
+  
   if (error) throw error;
   return data;
 }
 
 export async function getRecipe(id: number) {
+  const { data: { user } } = await supabase.auth.getUser();
+  
   const { data, error } = await supabase
     .from('recipes')
     .select(`
@@ -162,9 +187,62 @@ export async function getRecipe(id: number) {
       )
     `)
     .eq('id', id)
+    .or(`is_public.eq.true${user ? `,user_id.eq.${user.id}` : ''}`)
     .single();
 
   if (error) throw error;
   return data;
+}
+
+export async function updateRecipeVisibility(recipeId: number, isPublic: boolean) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Utilisateur non authentifié");
+
+  const { error } = await supabase
+    .from('recipes')
+    .update({ is_public: isPublic })
+    .eq('id', recipeId)
+    .eq('user_id', user.id);
+
+  if (error) throw error;
+}
+
+export async function getRandomRecipes(limit: number = 5) {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let query = supabase
+    .from('recipes')
+    .select(`
+      *,
+      recipe_ingredients (
+        ingredient_id,
+        quantity,
+        unit,
+        ingredients (
+          name
+        )
+      ),
+      recipe_tags (
+        category,
+        value,
+        label
+      )
+    `)
+    .limit(limit);
+
+  // Si l'utilisateur est connecté, montrer aussi ses recettes privées
+  if (user) {
+    query = query.or(`is_public.eq.true,user_id.eq.${user.id}`);
+  } else {
+    query = query.eq('is_public', true);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  // Mélanger les résultats et prendre les premiers
+  return data
+    .sort(() => Math.random() - 0.5)
+    .slice(0, limit);
 }
   

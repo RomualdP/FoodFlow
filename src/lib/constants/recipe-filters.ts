@@ -1,7 +1,10 @@
 export const PREPARATION_TIME_FILTERS = [
-  { value: "quick", label: "Rapide (< 30min)" },
-  { value: "medium", label: "Moyen (30-60min)" },
-  { value: "long", label: "Long (> 60min)" },
+  { value: "under_20", label: "Moins de 20 min" },
+  { value: "20_30", label: "20-30 min" },
+  { value: "30_45", label: "30-45 min" },
+  { value: "45_60", label: "45-60 min" },
+  { value: "60_90", label: "1h-1h30" },
+  { value: "over_90", label: "Plus de 1h30" },
 ]
 
 export const DIFFICULTY_FILTERS = [
@@ -11,16 +14,32 @@ export const DIFFICULTY_FILTERS = [
 ]
 
 export const CUISINE_TYPE_FILTERS = [
+  // Europe
   { value: "french", label: "Française" },
   { value: "italian", label: "Italienne" },
-  { value: "japanese", label: "Japonaise" },
-  { value: "chinese", label: "Chinoise" },
-  { value: "indian", label: "Indienne" },
-  { value: "mexican", label: "Mexicaine" },
   { value: "mediterranean", label: "Méditerranéenne" },
-  { value: "american", label: "Américaine" },
-  { value: "thai", label: "Thaïlandaise" },
-  { value: "vietnamese", label: "Vietnamienne" },
+  { value: "spanish", label: "Espagnole" },
+  { value: "greek", label: "Grecque" },
+
+  // Asie
+  { value: "east_asian", label: "Asie de l'Est" },
+  { value: "southeast_asian", label: "Asie du Sud-Est" },
+  { value: "south_asian", label: "Asie du Sud" },
+  { value: "middle_eastern", label: "Moyen-Orient" },
+
+  // Amériques
+  { value: "north_american", label: "Amérique du Nord" },
+  { value: "latin_american", label: "Amérique Latine" },
+  { value: "caribbean", label: "Caraïbes" },
+
+  // Afrique
+  { value: "north_african", label: "Afrique du Nord" },
+  { value: "west_african", label: "Afrique de l'Ouest" },
+  { value: "east_african", label: "Afrique de l'Est" },
+  
+  // Autres
+  { value: "fusion", label: "Fusion" },
+  { value: "other", label: "Autre" },
 ]
 
 export const DISH_TYPE_FILTERS = [

@@ -14,6 +14,28 @@ interface SelectedFilters {
   [category: string]: string[];
 }
 
+const getTimeFilterPredicate = (preparationTime: string | undefined, filterValue: string): boolean => {
+  if (!preparationTime) return false;
+  const time = parseInt(preparationTime);
+  
+  switch (filterValue) {
+    case 'under_20':
+      return time < 20;
+    case '20_30':
+      return time >= 20 && time <= 30;
+    case '30_45':
+      return time > 30 && time <= 45;
+    case '45_60':
+      return time > 45 && time <= 60;
+    case '60_90':
+      return time > 60 && time <= 90;
+    case 'over_90':
+      return time > 90;
+    default:
+      return false;
+  }
+};
+
 export default function RecipesPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({})
@@ -37,7 +59,7 @@ export default function RecipesPage() {
     loadRecipes()
   }, [])
 
-  // TODO: Implémenter la logique de filtrage avec l'API
+  // Filtrage des recettes
   const filteredRecipes = recipes
     .filter(recipe => {
       // Filtrage par recherche
@@ -51,9 +73,16 @@ export default function RecipesPage() {
       // Filtrage par tags sélectionnés
       if (Object.keys(selectedFilters).length === 0) return true;
 
-      return recipe.recipe_tags?.some(tag =>
-        selectedFilters[tag.category]?.includes(tag.value)
-      );
+      return recipe.recipe_tags?.some(tag => {
+        // Pour le temps de préparation, utiliser la nouvelle logique
+        if (tag.category === 'preparation_time' && selectedFilters[tag.category]) {
+          return selectedFilters[tag.category].some(filterValue => 
+            getTimeFilterPredicate(recipe.preparation_time, filterValue)
+          );
+        }
+        // Pour les autres catégories, garder la logique existante
+        return selectedFilters[tag.category]?.includes(tag.value);
+      });
     });
 
   if (loading) {
