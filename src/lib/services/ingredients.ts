@@ -13,7 +13,8 @@ export async function getIngredients() {
     .from('ingredients')
     .select('*')
     .order('name');
-    
+  console.log('data', data);
+  console.log('error', error);
   if (error) throw error;
   return data;
 }
@@ -24,7 +25,7 @@ export async function addIngredient(name: string) {
     .insert([{ name }])
     .select()
     .single();
-    
+  
   if (error) throw error;
   return data;
 } 
